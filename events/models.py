@@ -5,8 +5,6 @@ from django.utils import timezone
 class Event(models.Model):
     """메이플 이벤트 하나를 나타내는 표(테이블)."""
 
-    # 카테고리 선택지 (설계: 이벤트 / 업데이트 / 캐시샵 / 쿠폰)
-    # 왼쪽('event')은 DB에 저장되는 값, 오른쪽('이벤트')은 화면에 보이는 이름.
     class Category(models.TextChoices):
         EVENT = "event", "이벤트"
         UPDATE = "update", "업데이트"
@@ -48,14 +46,13 @@ class Event(models.Model):
     class Meta:
         verbose_name = "이벤트"
         verbose_name_plural = "이벤트"
-        ordering = ["-start_at"]  # 최신 시작 이벤트가 위로
+        ordering = ["-start_at"]
 
     def __str__(self):
         return self.title
 
     @property
     def status(self):
-        """예정 / 진행중 / 종료 를 날짜로 계산 (DB에 저장하지 않음)."""
         now = timezone.now()
         if self.start_at > now:
             return "예정"
@@ -65,7 +62,6 @@ class Event(models.Model):
 
     @property
     def days_left(self):
-        """종료까지 남은 일수. 상시(end_at 없음)나 이미 종료면 None."""
         if not self.end_at:
             return None
         delta = self.end_at - timezone.now()
@@ -77,8 +73,8 @@ class Reward(models.Model):
 
     event = models.ForeignKey(
         Event,
-        on_delete=models.CASCADE,  # 이벤트가 지워지면 그 보상들도 함께 삭제
-        related_name="rewards",     # event.rewards.all() 로 접근
+        on_delete=models.CASCADE,
+        related_name="rewards",
         verbose_name="이벤트",
     )
     name = models.CharField("보상 이름", max_length=200)

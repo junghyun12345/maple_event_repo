@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}로그인{% endblock %}
+
+{% block content %}
+<div class="max-w-sm mx-auto">
+    <h1 class="text-2xl font-bold mb-6">로그인</h1>
+
+    {% if form.errors %}
+    <div class="alert alert-error mb-4">아이디 또는 비밀번호가 올바르지 않습니다.</div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label class="label font-medium" for="{{ form.username.id_for_label }}">사용자 이름</label>
+            <input type="text" name="username" id="{{ form.username.id_for_label }}"
+                   class="input input-bordered w-full" autofocus required>
+        </div>
+        <div class="mb-4">
+            <label class="label font-medium" for="{{ form.password.id_for_label }}">비밀번호</label>
+            <input type="password" name="password" id="{{ form.password.id_for_label }}"
+                   class="input input-bordered w-full" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-full">로그인</button>
+    </form>
+</div>
+{% endblock %}

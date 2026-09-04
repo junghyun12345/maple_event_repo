@@ -121,6 +121,15 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# 업로드 이미지(미디어 파일)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# 로그인
+LOGIN_URL = 'events:login'
+LOGIN_REDIRECT_URL = 'events:list'
+LOGOUT_REDIRECT_URL = 'events:list'
+
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration

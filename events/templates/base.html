@@ -14,7 +14,18 @@
     <header class="navbar bg-base-100 shadow">
         <div class="container mx-auto px-4 flex justify-between items-center">
             <a href="{% url 'events:list' %}" class="text-xl font-bold">🍁 메이플 이벤트</a>
-            <a href="{% url 'events:archive' %}" class="btn btn-ghost btn-sm">지난 이벤트</a>
+            <div class="flex gap-1 items-center">
+                <a href="{% url 'events:archive' %}" class="btn btn-ghost btn-sm">지난 이벤트</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'events:write' %}" class="btn btn-ghost btn-sm">글쓰기</a>
+                <form method="post" action="{% url 'events:logout' %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-ghost btn-sm">로그아웃</button>
+                </form>
+                {% else %}
+                <a href="{% url 'events:login' %}" class="btn btn-ghost btn-sm">로그인</a>
+                {% endif %}
+            </div>
         </div>
     </header>
 
