@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <a href="{% url 'events:list' %}" class="btn btn-ghost btn-sm mb-4">← 목록</a>
+
+    <div class="flex gap-2 mb-2">
+        <span class="badge badge-primary">{{ event.get_category_display }}</span>
+        <span class="badge badge-outline">{{ event.status }}</span>
+    </div>
+    <h1 class="text-3xl font-bold mb-2">{{ event.title }}</h1>
+    <p class="text-sm opacity-60 mb-6">
+        {{ event.start_at|date:"Y.m.d" }} ~
+        {% if event.end_at %}{{ event.end_at|date:"Y.m.d" }}{% else %}상시{% endif %}
+    </p>
+
+    {% if event.thumbnail %}
+    <img src="{{ event.thumbnail.url }}" alt="{{ event.title }}" class="rounded-lg mb-6">
+    {% endif %}
+
+    <!-- 버튼 3개 -->
+    <div class="flex gap-2 mb-6">
+        <button id="btn-summary" class="btn btn-primary btn-sm" onclick="showSection('summary')">3줄 요약</button>
+        {% if event.body %}
+        <button id="btn-detail" class="btn btn-outline btn-sm" onclick="showSection('detail')">상세히 보기</button>
+        {% endif %}
+        {% if event.source_url %}
+        <a href="{{ event.source_url }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">공식 홈페이지 ↗</a>
+        {% endif %}
+    </div>
+
+    <!-- 3줄 요약 (기본 표시) -->
+    <section id="section-summary" class="prose max-w-none whitespace-pre-line">{{ event.summary_three }}</section>
+
+    <!-- 상세 본문 (마크다운, 처음엔 숨김) -->
+    {% if event.body %}
+    <section id="section-detail" class="prose max-w-none" style="display:none;">
+        <div id="body-rendered"></div>
+    </section>
+    {{ event.body|json_script:"body-md" }}
+    {% endif %}
+
+    <!-- 보상 -->
+    {% if event.rewards.all %}
+    <div class="divider"></div>
+    <h2 class="text-lg font-bold mb-2">보상</h2>
+    <ul class="list-disc pl-5 space-y-1">
+        {% for r in event.rewards.all %}
+        <li>{{ r.name }}{% if r.quantity %} × {{ r.quantity }}{% endif %}{% if r.condition %} <span class="opacity-60">— {{ r.condition }}</span>{% endif %}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+
+<!-- 마크다운 렌더러 (CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/marked@14.1.2/marked.min.js"></script>
+<script>
+    // 본문(마크다운)을 HTML로 변환해서 뿌립니다.
+    const mdEl = document.getElementById('body-md');
+    if (mdEl) {
+        marked.setOptions({ breaks: true });  // 엔터 한 번 = 줄바꿈 (<br>)
+        document.getElementById('body-rendered').innerHTML = marked.parse(JSON.parse(mdEl.textContent));
+    }
+
+    // 요약 / 상세 전환 (서버에 다시 요청하지 않고, 이미 받은 HTML을 보였다 숨겼다 함)
+    function showSection(which) {
+        const summary = document.getElementById('section-summary');
+        const detail = document.getElementById('section-detail');
+        const btnS = document.getElementById('btn-summary');
+        const btnD = document.getElementById('btn-detail');
+        const show = which === 'summary';
+        summary.style.display = show ? '' : 'none';
+        if (detail) detail.style.display = show ? 'none' : '';
+        btnS.className = 'btn btn-sm ' + (show ? 'btn-primary' : 'btn-outline');
+        if (btnD) btnD.className = 'btn btn-sm ' + (show ? 'btn-outline' : 'btn-primary');
+    }
+</script>
+{% endblock %}

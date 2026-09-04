@@ -1,0 +1,18 @@
+{# 이벤트 카드 한 장. 목록/지난이벤트 페이지에서 공통으로 씁니다. #}
+<a href="{% url 'events:detail' event.slug %}" class="card bg-base-100 shadow hover:shadow-lg transition">
+    {% if event.thumbnail %}
+    <figure><img src="{{ event.thumbnail.url }}" alt="{{ event.title }}"></figure>
+    {% endif %}
+    <div class="card-body">
+        <div class="flex gap-2">
+            <span class="badge badge-primary">{{ event.get_category_display }}</span>
+            <span class="badge badge-outline">{{ event.status }}</span>
+        </div>
+        <h2 class="card-title">{{ event.title }}</h2>
+        <p class="text-sm opacity-80">{{ event.summary_short }}</p>
+        <p class="text-xs opacity-60">
+            {{ event.start_at|date:"Y.m.d" }} ~
+            {% if event.end_at %}{{ event.end_at|date:"Y.m.d" }}{% else %}상시{% endif %}
+        </p>
+    </div>
+</a>

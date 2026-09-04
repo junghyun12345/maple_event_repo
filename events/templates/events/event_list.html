@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}이벤트 목록{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">이벤트</h1>
+
+<!-- 상태 필터 (링크로 처리 → 주소 공유·검색 노출 가능) -->
+<div class="tabs tabs-boxed mb-6 inline-flex">
+    <a href="?status=ongoing"  class="tab {% if status == 'ongoing' %}tab-active{% endif %}">진행중</a>
+    <a href="?status=upcoming" class="tab {% if status == 'upcoming' %}tab-active{% endif %}">예정</a>
+    <a href="?status=ended"    class="tab {% if status == 'ended' %}tab-active{% endif %}">종료</a>
+</div>
+
+<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {% for event in events %}
+        {% include "events/_event_card.html" %}
+    {% empty %}
+    <p class="opacity-70">표시할 이벤트가 없습니다.</p>
+    {% endfor %}
+</div>
+{% endblock %}
