@@ -1,16 +1,28 @@
-{# 이벤트 카드 한 장. 목록/지난이벤트 페이지에서 공통으로 씁니다. #}
-<a href="{% url 'events:detail' event.slug %}" class="card bg-base-100 shadow hover:shadow-lg transition">
+{# 이미지 강조형 카드 (travel-cards 스타일). 목록/지난이벤트 공통. #}
+<a href="{% url 'events:detail' event.slug %}"
+   class="group relative block aspect-[4/3] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition">
+
     {% if event.thumbnail %}
-    <figure><img src="{{ event.thumbnail.url }}" alt="{{ event.title }}"></figure>
+    <img src="{{ event.thumbnail.url }}" alt="{{ event.title }}"
+         class="absolute inset-0 w-full h-full object-cover transition duration-300 group-hover:scale-105">
+    {% else %}
+    <div class="absolute inset-0 bg-gradient-to-br from-primary to-sky-400"></div>
     {% endif %}
-    <div class="card-body">
-        <div class="flex gap-2">
-            <span class="badge badge-primary">{{ event.get_category_display }}</span>
-            <span class="badge badge-outline">{{ event.status }}</span>
-        </div>
-        <h2 class="card-title">{{ event.title }}</h2>
-        <p class="text-sm opacity-80">{{ event.summary_short }}</p>
-        <p class="text-xs opacity-60">
+
+    <!-- 글자가 잘 보이도록 어둡게 깔기 -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-black/10"></div>
+
+    <!-- 위쪽 배지 -->
+    <div class="absolute top-3 left-3 right-3 flex justify-between items-start">
+        <span class="badge badge-primary border-0">{{ event.get_category_display }}</span>
+        <span class="badge bg-black/45 text-white border-0">{{ event.status }}</span>
+    </div>
+
+    <!-- 아래쪽 제목·기간 -->
+    <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+        <h2 class="text-lg font-bold leading-snug">{{ event.title }}</h2>
+        <p class="text-xs text-white/85 mt-1 line-clamp-1">{{ event.summary_short }}</p>
+        <p class="text-[11px] text-white/70 mt-1">
             {{ event.start_at|date:"Y.m.d" }} ~
             {% if event.end_at %}{{ event.end_at|date:"Y.m.d" }}{% else %}상시{% endif %}
         </p>
