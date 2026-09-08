@@ -4,7 +4,8 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    # 관리자 주소를 기본 /admin/ 대신 추측 어려운 경로로 숨김 (자동 공격 봇 차단)
+    path("maple-manager-7x93/", admin.site.urls),
     path("", include("events.urls")),
 ]
 
