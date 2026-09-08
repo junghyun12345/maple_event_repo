@@ -4,15 +4,27 @@ from .base import *  # noqa
 
 DEBUG = False
 
-# 서버 접속을 허용할 주소. .env 의 ALLOWED_HOSTS 에서 읽습니다 (예: 서버 IP).
+# 서버 접속을 허용할 주소. .env 의 ALLOWED_HOSTS 에서 읽습니다.
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
-# 아직 HTTPS(도메인) 전이라 SSL 강제 리다이렉트는 켜지 않습니다.
-# 나중에 도메인+certbot 붙이면 아래를 켭니다:
-# SECURE_SSL_REDIRECT = True
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
+# nginx가 HTTPS를 종료하고 뒤로 http로 전달 → Django에 "원래 https였다"고 알림
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
 
-# 프록시(nginx) 뒤에 있을 때 클릭재킹/콘텐츠 스니핑 방어
+# HTTPS에서 폼 제출(로그인·관리자)을 허용할 도메인
+CSRF_TRUSTED_ORIGINS = [
+    'https://maplemate.life',
+    'https://www.maplemate.life',
+]
+
+# 보안 쿠키 (https 연결에서만 전송)
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# HSTS: 브라우저가 앞으로 https로만 접속하도록. 우선 1시간, 안정화되면 늘려도 됨.
+SECURE_HSTS_SECONDS = 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# 프록시 뒤 기본 방어
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
